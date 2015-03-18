@@ -191,7 +191,7 @@
         // left
         {
           name: "rovPilot.moveLeft",
-          description: "Turn the ROV to the port side (left).",
+          description: "Turn the rover left.",
           defaults: { keyboard: 'left' },
           down: function () {
             rov.cockpit.emit('rovpilot.setYaw', -1);
@@ -204,7 +204,7 @@
         // right
         {
           name: "rovPilot.moveRight",
-          description: "Turn the ROV to the starboard side (right).",
+          description: "Turn the rover right.",
           defaults: { keyboard: 'right' },
           down: function () {
             rov.cockpit.emit('rovpilot.setYaw', 1);
@@ -583,10 +583,14 @@
     var updateRequired = false;
     //Only send if there is a change
     var controls = {};
-    controls.throttle = positions.throttle * this.power;
-    controls.yaw = positions.yaw * this.power * 1.5;
+    // Rover: 'throttle' is unused ('lift' controls rover throttle)
+    controls.throttle = 0;
+    // Rover: 'yaw' is still steering, but power setting is no longer relevant.
+    //        We also need to flip left/right
+    controls.yaw = positions.yaw * -1;
     controls.yaw = Math.min(Math.max(controls.yaw, -1), 1);
-    controls.lift = positions.lift * this.power;
+    // Rover: 'lift' is wired to the main drive motor; full power is very fast
+    controls.lift = positions.throttle * this.power * 0.5;
     controls.pitch = positions.pitch;
     controls.roll = positions.roll;
     for (var i in positions) {
